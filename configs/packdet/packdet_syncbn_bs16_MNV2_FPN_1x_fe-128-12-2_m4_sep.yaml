@@ -1,0 +1,44 @@
+MODEL:
+  META_ARCHITECTURE: "GeneralizedRCNN"
+  WEIGHT: "https://cloudstor.aarnet.edu.au/plus/s/xtixKaxLWmbcyf7/download#mobilenet_v2-ecbe2b5.pth"
+  RPN_ONLY: True
+  PACKDET_ON: True
+  BACKBONE:
+    CONV_BODY: "MNV2-FPN-RETINANET"
+    FREEZE_CONV_BODY_AT: 0
+  MNV2:
+    BACKBONE_OUT_CHANNELS: 256
+  RETINANET:
+    USE_C5: False # FCOS uses P5 instead of C5
+  USE_SYNCBN: True
+  # added
+  PACKDET:
+    NUM_CONVS: 2
+    BASIC_MONTAGE_TYPE: 'type-4'
+    FE_TYPE: 'FE'
+    TRAIN_ENABLE_MONTAGE_SPEEDUP: True
+    TEST_ENABLE_MONTAGE_SPEEDUP: True
+    FE:
+      OUT_CHANNELS: 128
+      NUM_CONVS: 12
+DATASETS:
+  TRAIN: ("coco_2014_train", "coco_2014_valminusminival")
+  TEST: ("coco_2014_minival",)
+  #TEST: ("coco_2017_test_dev",)
+INPUT:
+  MIN_SIZE_TRAIN: (800,)
+  MAX_SIZE_TRAIN: 1333
+  MIN_SIZE_TEST: 800
+  MAX_SIZE_TEST: 1333
+DATALOADER:
+  SIZE_DIVISIBILITY: 32
+SOLVER:
+  BASE_LR: 0.01
+  WEIGHT_DECAY: 0.0001
+  STEPS: (60000, 80000)
+  MAX_ITER: 90000
+  IMS_PER_BATCH: 16
+  WARMUP_METHOD: "constant"
+VISUALIZE:
+  ENV: 'packdet_syncbn_bs16_MNV2_FPN_1x_fe-128-12-2_m4_sep'
+  PERIOD: 1000

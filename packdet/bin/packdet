@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+from __future__ import print_function
+from packdet import PackDet
+import cv2
+import skimage.io as io
+import argparse
+import torch
+import time
+
+
+def pretty_print(bbox_results):
+    max_label_name_len = max([len(_["label_name"]) for _ in bbox_results])
+    for item in bbox_results:
+        print("{}    confidence: {:.2f}    ".format(
+            item["label_name"].ljust(max_label_name_len),
+            item["score"],
+        ), end="")
+        print("bbox: {:.1f} {:.1f} {:.1f} {:.1f}".format(
+            item["box"][0],
+            item["box"][1],
+            item["box"][2],
+            item["box"][3],
+        ))
+
+
+parser = argparse.ArgumentParser(description="PackDet Object Detector")
+parser.add_argument(
+    "input_image",
+    help="path or url to an input image",
+)
+args = parser.parse_args()
+
+detector = PackDet(
+    model_name="packdet_syncbn_bs16_MNV2_FPN_2x_fe-128-12-2_m4_sep",
+    nms_thresh=0.6,
+    cpu_only=not torch.cuda.is_available()  # if you do not have GPUs, please set cpu_only as True
+)
+
+im = io.imread(args.input_image)
+assert im.shape[-1] == 3, "only 3-channel images are supported"
+
+# convert from RGB to BGR because packdet assumes the BRG input image
+im = im[..., ::-1].copy()
+
+# resize image to have its shorter size == 800
+f = 800.0 / float(min(im.shape[:2]))
+im = cv2.resize(im, (0, 0), fx=f, fy=f)
+
+start_time = time.time()
+
+bbox_results = detector.detect(im)
+
+inference_time = time.time() - start_time
+
+pretty_print(bbox_results)
+print("Predicted in {:.2f} seconds.".format(inference_time))
+print("Press any key to exit...")
+detector.show_bboxes(im, bbox_results)
