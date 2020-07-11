@@ -16,7 +16,7 @@ This is the implementation of "PackDet: Packed Long-Head Object Detector, ECCV'2
 ## Highlights
 
 - **PackOp:** A universal algorithm to speed up FPN-like structure, which is demonstrated to be platform-agnostic.
-- **Better acuracy-speed trade-off:** Obtain higher accuracy-speed trade-off points against state-of-the-art methods, e.g., FCOS.
+- **Better Acuracy-Speed Trade-off:** Obtain higher accuracy-speed trade-off points against state-of-the-art anchor-free one-stage methods.
 - **Cross-Head Group Normalization:** Normalize all head branches together, which improves accuracy notably.
 
 
@@ -40,23 +40,23 @@ Once the installation is done, you can follow the below steps to run a quick dem
     # assume that you are under the root directory of this project, and you have activated your virtual environment if needed.
     
     mkdir models
-    # download packdet_R_50_FPN_1x_fe-128-12-2_m4_sep.pth and move it to ./models/ folder
+    # download packdet_R_50_FPN_1x_fe-128-12-2_m4_sep.pth and put it into the ./models/ folder
     python demo/demo.py
 
 
 
 ## Inference
-Before running the following commands, you should first link the dataset. [link_coco.sh](datasets/link_coco.sh) gives an example to link the COCO dataset. You need to modify the paths therein accordingly.
+Before running the following commands, you should first link the dataset. [link_coco.sh](datasets/link_coco.sh) gives an example to link the COCO dataset. You need to modify the paths therein, accordingly.
 
-The inference command line on COCO dataset with a single GPU card:
+The inference command line on COCO dataset with a single GPU:
 
     python tools/test_net.py \
         --config-file configs/packdet/packdet_R_50_FPN_1x_fe-128-12-2_m4_sep.yaml \
         MODEL.WEIGHT models/packdet_R_50_FPN_1x_fe-128-12-2_m4_sep.pth \
         TEST.IMS_PER_BATCH 4
 
-Note that, the COCO split is specified in the yaml file. If you want to speed up the inference, 
-you could use multiple cards:
+Note that, the COCO data split is specified in the yaml file. If you want to speed up the inference, 
+you could use multiple GPUs:
 
     python -m torch.distributed.launch \
     --nproc_per_node=8 \
@@ -119,7 +119,7 @@ tensorboard --logdir ./tbx/packdet_R_50_FPN_1x_fe-128-12-2_m4_sep --host 192.168
 # change 192.168.20.223 to your host
 ```
 
-You need modify the yaml file to tune the visualization period.
+You need to modify the yaml file to tune the visualization period.
 
 You may use `tmux` to isolate different training procedures, note that [tmux may cause anaconda to use a different python source](https://unix.stackexchange.com/questions/366553/tmux-is-causing-anaconda-to-use-a-different-python-source). Use `which python` to ensure that you are in the correct environment.
 
@@ -163,4 +163,4 @@ We would like to thank [@tianzhi0549](https://github.com/tianzhi0549/FCOS) for t
 
 ## License
 
-For academic use, this project is licensed under Apache License 2.0.
+This project is licensed under Apache License 2.0.
