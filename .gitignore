@@ -27,3 +27,6 @@ dist/
 
 # project dirs
 /models
+
+# mac
+.DS_store
